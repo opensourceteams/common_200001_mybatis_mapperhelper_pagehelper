@@ -1,6 +1,7 @@
 # mybatis 通用mapper、pageHelper
 ## 功能
-- mybatis 自动生成代码
+- mybatis 自动生成代码（类生成）
+- mybatis 自动生成代码（maven plugin 生成）
 - 通用mapper 自增长CRUD单元测试 
 - 通用mapper UUID，CRUD单元测试 
 - mybatis自动生成
@@ -175,11 +176,16 @@ public class TestMybatisGenerate {
 }
 
 ```
+### mybatis 自动生成代码（maven plugin 生成）
+```shell
+set MAVEN_OPTS="-Dfile.encoding=UTF-8"
+mvn  -Dmybatis.generator.overwrite=true  mybatis-generator:generate
+```
 
 ### pom.xml
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.opensourceteam</groupId>
@@ -196,6 +202,12 @@ public class TestMybatisGenerate {
     <maven.compiler.target>1.8</maven.compiler.target>
     <jdk.version>1.8</jdk.version>
     <logback.version>1.2.3</logback.version>
+
+
+
+    <!--  依赖版本  -->
+    <mapper.version>3.5.0</mapper.version>
+    <mysql.version>5.1.42</mysql.version>
   </properties>
 
 
@@ -263,7 +275,7 @@ public class TestMybatisGenerate {
       <artifactId>pagehelper</artifactId>
       <version>5.1.2</version>
     </dependency>
-</dependencies>
+  </dependencies>
 
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
@@ -273,8 +285,33 @@ public class TestMybatisGenerate {
         <directory>src/main/resources</directory>
       </resource>
     </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.mybatis.generator</groupId>
+        <artifactId>mybatis-generator-maven-plugin</artifactId>
+        <version>1.3.6</version>
+        <configuration>
+          <configurationFile>${basedir}/src/main/resources/generator/generatorConfig.xml</configurationFile>
+          <overwrite>true</overwrite>
+          <verbose>true</verbose>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper</artifactId>
+            <version>${mapper.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
   </build>
 </project>
+
 
 ```
 
